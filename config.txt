@@ -1,0 +1,682 @@
+#!/bin/bash
+
+[ $# -ne 1 ] && echo "sh $0 {start|status|stop|restart}" && exit 1
+
+start() {
+    cd ../
+    source /wxx/config.properties
+    host=$BACKEND_HOST
+
+    (sed -i -r "s|host\s*:\s*'.*'|host: '${host}'|" wxx/Constants.js)
+
+    cat wxx/Constants.js
+    nohup node app.js 8088 &
+} 
+
+stop(){
+    if ps -ef |grep -v grep |grep -q 'app.js 8088';then
+        ps -ef |grep -v grep|grep 'app.js 8088'|awk '{print $2}'|xargs kill -9
+    else
+        echo "app.js 8088 is stoped"
+    fi
+}
+status(){
+    pro_num=`ps -ef |grep -v grep|grep 'app.js 8088'|awk '{print $2}'`
+    if [[ $pro_num -ge 1 ]];then
+        echo "node server.js is running PID is $pro_num" 
+    else
+        echo "node server.js is stopped"
+    fi
+}
+
+
+case $1 in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status
+        ;;
+    restart)
+        stop
+        sleep 2
+        start
+        ;;
+    *)
+        exit 2
+        ;;
+esac
+
+
+var app = angular.module('mail.app', [
+    'ui.router',                    // Routing
+    'oc.lazyLoad',                  // ocLazyLoad
+    'ui.bootstrap',                 // Ui Bootstrap
+    'pascalprecht.translate',       // Angular Translate
+    'ngIdle',                       // Idle timer
+    'ngSanitize',                    // ngSanitize
+    'base64',
+    'ngCookies',
+    'angular.permission'             // 权限模块
+]);
+
+
+angular.module('wxx').filter('xxx',xxx);
+angular.module('wxx').directive('tmPagination', tmPagination);
+angular.module('wxx').config(config).run(function ($rootScope, $state) {
+
+    $rootScope.$on('$stateChangeStart', function (event, toState) {
+
+            if (!$http.defaults.headers.common.Authorization || $http.defaults.headers.common.Authorization == null) {
+                $http.defaults.headers.common.Authorization = $cookies.get("token");
+            }
+
+            if (!$location.url().startsWith(INDEX_URL)) {
+
+            }
+        }    
+    });    
+
+    $rootScope.$state = $state;
+    $rootScope.previousState = {};
+    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+        $rootScope.previousState.name = fromState.name;
+        $rootScope.previousState.params = fromParams;
+    });
+});
+
+
+
+
+
+
+/**
+ * 分页组件
+ *
+ * */
+function tmPagination() {
+
+    return {
+        restrict: 'EA',
+        template: '<div class="page-list">' +
+        '<ul class="pagination" ng-show="conf.totalItems > 0">' +
+        '<li ng-class="{disabled: conf.currentPage == 1}" ng-click="prevPage()"><span>&laquo;</span></li>' +
+        '<li ng-repeat="item in pageList track by $index" ng-class="{active: item == conf.currentPage, separate: item == \'...\'}" ' +
+        'ng-click="changeCurrentPage(item)">' +
+        '<span>{{ item }}</span>' +
+        '</li>' +
+        '<li ng-class="{disabled: conf.currentPage == conf.numberOfPages}" ng-click="nextPage()"><span>&raquo;</span></li>' +
+        '</ul>' +
+        '<div class="page-total" ng-show="conf.totalItems > 0">' +
+        '每页<select ng-model="conf.itemsPerPage" ng-options="option for option in conf.perPageOptions " ng-change="changeItemsPerPage()"></select>' +
+        '/共<strong>{{ conf.totalItems }}</strong>条 ' +
+        '跳转至<input type="text" ng-model="jumpPageNum" ng-keyup="jumpPageKeyUp($event)"/>' +
+        '</div>' +
+        '<div class="no-items" ng-show="conf.totalItems <= 0">暂无数据</div>' +
+        '</div>',
+        replace: true,
+        scope: {
+            conf: '='
+        },
+        link: function(scope, element, attrs) {
+
+            var conf = scope.conf;
+
+            // 默认分页长度
+            var defaultPagesLength = 9;
+
+            // 默认分页选项可调整每页显示的条数
+            var defaultPerPageOptions = [10, 15, 20, 30, 50];
+
+            // 默认每页的个数
+            var defaultPerPage = 15;
+
+            // 获取分页长度
+            if(conf.pagesLength) {
+                // 判断一下分页长度
+                conf.pagesLength = parseInt(conf.pagesLength, 10);
+
+                if(!conf.pagesLength) {
+                    conf.pagesLength = defaultPagesLength;
+                }
+
+                // 分页长度必须为奇数，如果传偶数时，自动处理
+                if(conf.pagesLength % 2 === 0) {
+                    conf.pagesLength += 1;
+                }
+
+            } else {
+                conf.pagesLength = defaultPagesLength
+            }
+
+            // 分页选项可调整每页显示的条数
+            if(!conf.perPageOptions){
+                conf.perPageOptions = defaultPagesLength;
+            }
+
+            // pageList数组
+            function getPagination(newValue, oldValue) {
+
+                // conf.currentPage
+                if(conf.currentPage) {
+                    conf.currentPage = parseInt(scope.conf.currentPage, 10);
+                }
+
+                if(!conf.currentPage) {
+                    conf.currentPage = 1;
+                }
+
+                // conf.totalItems
+                if(conf.totalItems) {
+                    conf.totalItems = parseInt(conf.totalItems, 10);
+                }
+
+                // conf.totalItems
+                if(!conf.totalItems) {
+                    conf.totalItems = 0;
+                    return;
+                }
+
+                // conf.itemsPerPage
+                if(conf.itemsPerPage) {
+                    conf.itemsPerPage = parseInt(conf.itemsPerPage, 10);
+                }
+                if(!conf.itemsPerPage) {
+                    conf.itemsPerPage = defaultPerPage;
+                }
+
+                // numberOfPages
+                conf.numberOfPages = Math.ceil(conf.totalItems/conf.itemsPerPage);
+
+                // 如果分页总数>0，并且当前页大于分页总数
+                if(scope.conf.numberOfPages > 0 && scope.conf.currentPage > scope.conf.numberOfPages){
+                    scope.conf.currentPage = scope.conf.numberOfPages;
+                }
+
+                // 如果itemsPerPage在不在perPageOptions数组中，就把itemsPerPage加入这个数组中
+                var perPageOptionsLength = scope.conf.perPageOptions.length;
+
+                // 定义状态
+                var perPageOptionsStatus;
+                for(var i = 0; i < perPageOptionsLength; i++){
+                    if(conf.perPageOptions[i] == conf.itemsPerPage){
+                        perPageOptionsStatus = true;
+                    }
+                }
+                // 如果itemsPerPage在不在perPageOptions数组中，就把itemsPerPage加入这个数组中
+                if(!perPageOptionsStatus){
+                    conf.perPageOptions.push(conf.itemsPerPage);
+                }
+
+                // 对选项进行sort
+                conf.perPageOptions.sort(function(a, b) {return a - b});
+
+
+                // 页码相关
+                scope.pageList = [];
+                if(conf.numberOfPages <= conf.pagesLength){
+                    // 判断总页数如果小于等于分页的长度，若小于则直接显示
+                    for(i =1; i <= conf.numberOfPages; i++){
+                        scope.pageList.push(i);
+                    }
+                }else{
+                    // 总页数大于分页长度（此时分为三种情况：1.左边没有...2.右边没有...3.左右都有...）
+                    // 计算中心偏移量
+                    var offset = (conf.pagesLength - 1) / 2;
+                    if(conf.currentPage <= offset){
+                        // 左边没有...
+                        for(i = 1; i <= offset + 1; i++){
+                            scope.pageList.push(i);
+                        }
+                        scope.pageList.push('...');
+                        scope.pageList.push(conf.numberOfPages);
+                    }else if(conf.currentPage > conf.numberOfPages - offset){
+                        scope.pageList.push(1);
+                        scope.pageList.push('...');
+                        for(i = offset + 1; i >= 1; i--){
+                            scope.pageList.push(conf.numberOfPages - i);
+                        }
+                        scope.pageList.push(conf.numberOfPages);
+                    }else{
+                        // 最后一种情况，两边都有...
+                        scope.pageList.push(1);
+                        scope.pageList.push('...');
+
+                        for(i = Math.ceil(offset / 2) ; i >= 1; i--){
+                            scope.pageList.push(conf.currentPage - i);
+                        }
+                        scope.pageList.push(conf.currentPage);
+                        for(i = 1; i <= offset / 2; i++){
+                            scope.pageList.push(conf.currentPage + i);
+                        }
+
+                        scope.pageList.push('...');
+                        scope.pageList.push(conf.numberOfPages);
+                    }
+                }
+
+                scope.$parent.conf = conf;
+            }
+
+            // prevPage
+            scope.prevPage = function() {
+                if(conf.currentPage > 1){
+                    conf.currentPage -= 1;
+                }
+                getPagination();
+                if(conf.onChange) {
+                    conf.onChange();
+                }
+            };
+
+            // nextPage
+            scope.nextPage = function() {
+                if(conf.currentPage < conf.numberOfPages){
+                    conf.currentPage += 1;
+                }
+                getPagination();
+                if(conf.onChange) {
+                    conf.onChange();
+                }
+            };
+
+            // 变更当前页
+            scope.changeCurrentPage = function(item) {
+
+                if(item == '...'){
+                    return;
+                }else{
+                    conf.currentPage = item;
+                    getPagination();
+                    // conf.onChange()函数
+                    if(conf.onChange) {
+                        conf.onChange();
+                    }
+                }
+            };
+
+            // 修改每页展示的条数
+            scope.changeItemsPerPage = function() {
+
+                // 一发展示条数变更，当前页将重置为1
+                conf.currentPage = 1;
+
+                getPagination();
+                // conf.onChange()函数
+                if(conf.onChange) {
+                    conf.onChange();
+                }
+            };
+
+            // 跳转页
+            scope.jumpToPage = function() {
+                var num = scope.jumpPageNum;
+                if(num.match(/\d+/)) {
+                    num = parseInt(num, 10);
+
+                    if(num && num != conf.currentPage) {
+                        if(num > conf.numberOfPages) {
+                            num = conf.numberOfPages;
+                        }
+
+                        // 跳转
+                        conf.currentPage = num;
+                        getPagination();
+                        // conf.onChange()函数
+                        if(conf.onChange) {
+                            conf.onChange();
+                        }
+                        scope.jumpPageNum = '';
+                    }
+                }
+
+            };
+
+            scope.jumpPageKeyUp = function(e) {
+                var keycode = window.event ? e.keyCode :e.which;
+
+                if(keycode == 13) {
+                    scope.jumpToPage();
+                }
+            }
+
+            scope.$watch('conf.totalItems', function(value, oldValue) {
+
+                // 在无值或值相等的时候，去执行onChange事件
+                if(!value || value == oldValue) {
+
+                    if(conf.onChange) {
+                        conf.onChange();
+                    }
+                }
+                getPagination();
+            })
+
+        }
+    };
+
+}
+
+
+
+
+angular.module('angular.permission', ['ui.router'])
+
+    .factory('option', function () {
+        return {
+            "allowAuthRedirect": true,
+            "hasConsole": false,
+            "supportRedirectUrl": true,
+            "checkUnSaveRouter": "dim.process_order;"
+        }
+    })
+
+    /**
+     * 设置组件/元素初始值
+     */
+    .factory('angularPermission', ['$rootScope', function ($rootScope) {
+        return {
+            setPermissions: function (permissions) {
+                $rootScope.userPermissionList = permissions;
+                $rootScope.$broadcast('permissionsChanged');
+            },
+
+            hasPermission: function (permission) {
+                if ($rootScope.userPermissionList && $rootScope.userPermissionList.indexOf(permission.trim()) > -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        };
+    }])
+
+    /**
+     * 组件/元素可见验证
+     */
+    .directive('hasPermission', ['angularPermission', function (angularPermission) {
+        return {
+            link: function (scope, element, attrs) {
+                if (!angular.isString(attrs.hasPermission))
+                    throw "hasPermission value must be a string!";
+                var value = attrs.hasPermission.trim();
+                var notPermissionFlag = value[0] === '!';
+
+                if (notPermissionFlag) {
+                    value = value.slice(1).trim();
+                }
+                function toggleVisibilityBasedOnPermission() {
+                    var hasPermission = angularPermission.hasPermission(value);
+                    if (hasPermission && !notPermissionFlag || !hasPermission && notPermissionFlag) {
+                        element.show();
+                    } else {
+                        element.remove();
+                    }
+                }
+
+                toggleVisibilityBasedOnPermission();
+                scope.$on('permissionsChanged', toggleVisibilityBasedOnPermission);
+            }
+        };
+    }])
+
+    /**
+     *  UIRouter验证
+     */
+    .run(function ($rootScope, $location, $state, $http, $cookies, $timeout, option, appResources, angularPermission) {
+
+        $rootScope.$on('$stateChangeStart', function (event, toState) {
+
+            if (!$http.defaults.headers.common.Authorization || $http.defaults.headers.common.Authorization == null) {
+                $http.defaults.headers.common.Authorization = $cookies.get("token");
+            }
+
+            if (!$location.url().startsWith(INDEX_URL)) {
+
+                // 初始化用户资源权限
+                $http.post(appResources.AUTHENTICATION_URLS.AUTH_RESOURCE).success(function (response) {
+                    angularPermission.setPermissions(response.data);
+                }).error(function (error) {
+                    console.error("uiRouter refresh > get userPermissionList occur error");
+                });
+
+                // 一、uiRouter请求验证Token是否有效
+                if (null == $http.defaults.headers.common.Authorization) {
+
+                    if (option.hasConsole) {
+                        console.log("[stateChangeStart] 验证Token为空，跳转权限平台统一登录");
+                    }
+
+                    if (option.allowAuthRedirect) {
+                        if ($location.url().indexOf("tksecurity") == -1) {
+                            window.location.href = !option.supportRedirectUrl ? LOGIN_URL : (LOGIN_URL + "&redirctUrl=" + encodeURIComponent($location.url()));
+                        } else {
+                            window.location.href = LOGIN_URL;
+                        }
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+
+                // 二、权限的后台验证
+                var config = {
+                    method: "POST",
+                    url: appResources.AUTHENTICATION_URLS.CHECK_TOKEN_URL,
+                    data: {'url': toState.name}
+                };
+
+                //由于route跳转为纯前端操作，后端拦截器无法捕获，故此处需要手动调用Token及权限验证
+                $http(config).success(function (response) {
+                    if (!response.result) {
+
+                        if (option.hasConsole) {
+                            console.log("[stateChangeStart] 验证[" + response.result + "]" + $location.url() + "，[" + (null != response.data ? response.data.responseCode : null) + "] " + (null != response.data ? response.data.message : null));
+                        }
+
+                        if (option.allowAuthRedirect) {
+                            if (response.responseCode == 'RESOURCE_AUTH_FAIL') {
+                                $cookies.put("message", angular.toJson({
+                                    title: response.responseCode,
+                                    content: response.message
+                                }));
+                                window.location.href = LOCAL_URL + "#!" + INDEX_URL;
+                            } else {
+                                window.location.href = LOGIN_URL;
+                                event.preventDefault();
+                            }
+                        }
+                    }
+                }).error(function (error) {
+
+                });
+
+                // 当页面数据未保存时进行提示 Start
+                // 取出原Router
+                if ($cookies.get("currentRouter")) {
+
+                    var currentRouter = angular.fromJson($cookies.get("currentRouter")).name;
+                    var reload = false;
+
+                    if (option.checkUnSaveRouter.indexOf(toState.name) != -1) {
+                        $cookies.put("hasSave", false);
+                        reload = true;
+                        window.onbeforeunload = function (event) {
+                            return '';
+                        }
+                    } else {
+                        window.onbeforeunload = null;
+                    }
+
+                    if (option.checkUnSaveRouter.indexOf(currentRouter) != -1 && !reload && $cookies.get("hasSave") == "false") {
+                        var r = confirm("系统可能不会保存您所做的更改，确定继续吗？");
+                        if (!r) {
+                            event.preventDefault();
+
+                            window.onbeforeunload = function (event) {
+                                return '';
+                            }
+
+                            return false;
+                        }
+                    }
+                }
+                // 更新当前Router
+                $cookies.put("currentRouter", angular.toJson(toState));
+            }
+        });
+        $rootScope.$state = $state;
+    })
+
+    /**
+     * HTTP请求验证
+     */
+    .config(['$httpProvider', function ($httpProvider) {
+        $httpProvider.interceptors.push('httpPermissionInterceptor');
+    }
+    ])
+
+    .factory('httpPermissionInterceptor', ['$q', '$cookies', '$location', 'option', function ($q, $cookies, $location, option) {
+        var httpPermissionInterceptor = {
+            request: function (config) {
+
+                if (!config.headers.Authorization || null == config.headers.Authorization) {
+                    config.headers.Authorization = $cookies.get("token");
+                }
+
+                return config;
+            },
+
+            response: function (response) {
+                //返回拦截 判断是否有相关权限 （Token失效跳转登录页，权限不足跳转提示页）
+                if (option.hasConsole) {
+                    console.log("[httpPermissionInterceptor] 验证 [" + $location.url() + "], Response=[" + angular.toJson(response) + "]");
+                }
+
+                if (!response.data.result && response.data.responseCode && option.allowAuthRedirect) {
+                    if (new RegExp("^TOKEN_").test(response.data.responseCode)) {
+                        if ($location.url().indexOf("tksecurity") == -1) {
+                            window.location.href = !option.supportRedirectUrl ? LOGIN_URL : (LOGIN_URL + "&redirctUrl=" + encodeURIComponent($location.url()));
+                        } else {
+                            window.location.href = LOGIN_URL;
+                        }
+                    } else if (new RegExp("^RESOURCE_AUTH_").test(response.data.responseCode)) {
+                        $cookies.put("message.title", response.data.responseCode);
+                        $cookies.put("message.content", response.data.message);
+
+                        $cookies.put("message", angular.toJson({
+                            title: response.data.responseCode,
+                            content: response.data.message
+                        }));
+
+                        $location.path(INDEX_URL);
+                    }
+
+                    // 创建一个指定拒绝原因的promise
+                    // 请求失败时返回数据前端可能需要进行页面提示，此处不再进行拒绝操作
+                    // return $q.reject(response);
+                }
+
+                return response;
+            }
+        };
+        return httpPermissionInterceptor;
+    }])
+
+    // ajax hook
+    .run(function ($http, $cookies, option) {
+        hookAjax({
+            send: function (arg, xhr) {
+                if ($http.defaults.headers.common.Authorization) {
+                    xhr.setRequestHeader("AuthorizationToken", $http.defaults.headers.common.Authorization);
+                }
+            },
+            onload: function (xhr) {
+
+                if (xhr && xhr.responseText && xhr.responseText.startsWith("{")) {
+                    var response = angular.fromJson(xhr.responseText);
+
+                    if (option.hasConsole) {
+                        console.log("[ajaxHook] 验证 [" + response.result + "]，[" + response.responseCode + "] " + response.message);
+                    }
+
+                    if (!response.result && response.responseCode && option.allowAuthRedirect) {
+                        if (new RegExp("^TOKEN_").test(response.responseCode)) {
+                            window.location.href = LOGIN_URL;
+                        } else if (new RegExp("^RESOURCE_AUTH_").test(response.responseCode)) {
+                            $cookies.put("message.title", response.responseCode);
+                            $cookies.put("message.content", response.message);
+
+                            $cookies.put("message", angular.toJson({
+                                title: response.responseCode,
+                                content: response.message
+                            }));
+
+                            window.location.href = LOCAL_URL + "#!" + INDEX_URL;
+                        }
+                    }
+                }
+
+            }
+        })
+    })
+;
+
+
+app.config(function ($httpProvider) {
+    $httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
+    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+    // Override $http service's default transformRequest
+    $httpProvider.defaults.transformRequest = [function (data) {
+        /**
+         * The workhorse; converts an object to x-www-form-urlencoded serialization.
+         * @param {Object} obj
+         * @return {String}
+         */
+        var param = function (obj) {
+            var query = '';
+            var name, value, fullSubName, subName, subValue, innerObj, i;
+
+            for (name in obj) {
+                value = obj[name];
+
+                if (value instanceof Array) {
+                    for (i = 0; i < value.length; ++i) {
+                        subValue = value[i];
+                        fullSubName = name + '[' + i + ']';
+                        innerObj = {};
+                        innerObj[fullSubName] = subValue;
+                        query += param(innerObj) + '&';
+                    }
+                } else if (value instanceof Object) {
+                    for (subName in value) {
+                        subValue = value[subName];
+                        fullSubName = name + '[' + subName + ']';
+                        innerObj = {};
+                        innerObj[fullSubName] = subValue;
+                        query += param(innerObj) + '&';
+                    }
+                } else if (value !== undefined && value !== null) {
+                    query += encodeURIComponent(name) + '='
+                        + encodeURIComponent(value) + '&';
+                }
+            }
+
+            return query.length ? query.substr(0, query.length - 1) : query;
+        };
+
+        return angular.isObject(data) && String(data) !== '[object File]'
+            ? param(data)
+            : data;
+    }];
+});
+
+
+
+
+
+
+
