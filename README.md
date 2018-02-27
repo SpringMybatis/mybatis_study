@@ -12,6 +12,13 @@ http://rainyear.iteye.com/blog/1339825
 # java jvm 
 http://rainyear.iteye.com/category/249662
 
+# springboot部署
+http://blog.csdn.net/catoop/article/details/50588851
+
+https://www.jianshu.com/p/afc31c34a99b
+
+https://www.jianshu.com/p/e8481d609459
+
 # java springboot file upload 
 http://blog.csdn.net/coding13/article/details/54577076
 
