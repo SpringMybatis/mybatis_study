@@ -53,7 +53,16 @@ http://blog.csdn.net/jiangtao_st/article/details/73612298
 
 https://packages.gitlab.com/gitlab/gitlab-ce
 
+# jenkins
+https://www.jianshu.com/p/b524b151d35f
 
+https://www.w3cschool.cn/jenkins/jenkins-5h3228n2.html
+
+https://www.yiibai.com/jenkins/
+
+https://www.cnblogs.com/zishengY/p/7170656.html
+
+https://www.cnblogs.com/hdwang/p/6081994.html
 
 
 
