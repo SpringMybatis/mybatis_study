@@ -41,3 +41,69 @@
         </Logger>  
     </Loggers>  
 </configuration>  
+
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!--设置log4j2的自身log级别为warn-->
+<configuration status="warn">
+
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+        </console>
+
+        <RollingFile name="RollingFileInfo" fileName="/logs/info.log" filePattern="logs/**%d{yyyy-MM-dd_HH}**_info_%i.log">
+            <Filters>
+                <ThresholdFilter level="INFO"/>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="max"/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileDebug" fileName="/logs/debug.log" filePattern="logs/**%d{yyyy-MM-dd_HH}**_debug_%i.log">
+            <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="max"/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileError" fileName="/logs/error.log" filePattern="logs/**%d{yyyy-MM-dd_HH}**_error_%i.log">
+            <ThresholdFilter level="ERROR"/>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="max"/>
+        </RollingFile>
+
+    </appenders>
+
+    <loggers>
+        <!--过滤掉spring一些无用的debug信息-->
+        <logger name="org.springframework" level="INFO"></logger>
+        <root level="all">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileDebug"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </loggers>
+
+</configuration>
+
+
+
+
