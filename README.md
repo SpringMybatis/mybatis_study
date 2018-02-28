@@ -37,3 +37,28 @@ http://tengj.top/2017/04/05/springboot7/
 
 # springboot干货
 http://tengj.top/categories/Spring-Boot%E5%B9%B2%E8%B4%A7%E7%B3%BB%E5%88%97/
+
+# gitlab
+https://about.gitlab.com/installation/
+
+https://docs.gitlab.com/omnibus/README.html#installation-and-configuration-using-omnibus-package
+
+https://www.cnblogs.com/weifeng1463/p/7714492.html
+
+https://www.cnblogs.com/Gyoung/p/7729095.html
+
+https://www.cnblogs.com/TechSnail/p/7745459.html
+
+http://blog.csdn.net/jiangtao_st/article/details/73612298
+
+https://packages.gitlab.com/gitlab/gitlab-ce
+
+
+
+
+
+
+
+
+
+
