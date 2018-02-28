@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+            <title>
+                window
+            </title>
+            <script type="text/javascript">
+                
+
+
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['js/plugins/moment/moment.min.js']
+                        },
+                        {
+                            serie: true,
+                            files: ['js/plugins/dataTables/datatables.min.js', 'css/plugins/dataTables/datatables.min.css']
+                        },
+                        {
+                            files: ['js/plugins/footable/footable.all.min.js', 'css/plugins/footable/footable.core.css']
+                        },
+                        {
+                            name: 'ui.footable',
+                            files: ['js/plugins/footable/angular-footable.js']
+                        },
+                        {
+                            serie: true,
+                            name: 'datatables',
+                            files: ['js/plugins/dataTables/angular-datatables.min.js']
+                        },
+                        {
+                            serie: true,
+                            name: 'datatables.buttons',
+                            files: ['js/plugins/dataTables/angular-datatables.buttons.min.js']
+                        },
+                        {
+                            serie: true,
+                            files: ['js/plugins/daterangepicker/daterangepicker.js', 'css/plugins/daterangepicker/daterangepicker-bs3.css']
+                        },
+                        {
+                            name: 'daterangepicker',
+                            files: ['js/plugins/daterangepicker/angular-daterangepicker.js']
+                        },
+                        {
+                            files: ['js/plugins/sweetalert/sweetalert.min.js', 'css/plugins/sweetalert/sweetalert.css']
+                        },
+                        {
+                            name: 'oitozero.ngSweetAlert',
+                            files: ['js/plugins/sweetalert/angular-sweetalert.min.js']
+                        }
+                    ]);
+                }
+            }
+
+
+
+    //databale分页 --
+    demo.dtOptions = DTOptionsBuilder.newOptions()
+        .withLanguageSource('resources/properties/datatable_language.properties')
+        .withOption('aLengthMenu', [10, 20, 50, 100])
+        .withOption('bFilter', false)
+        .withOption('bSort', true)
+        .withOption('processing', true)
+        .withOption('serverSide', true)
+        .withPaginationType('simple_numbers')
+        .withFnServerData(function (sSource, aoData, fnCallback, oSettings) {
+            var params = {};
+            //调用service查询方法
+            helperService.queryUser(params).then(function (response) {
+                //angular ng-repeat数据
+                demo.pageInfo = response.data.data;
+
+                //分页返回参数
+                var returnData = {};
+                returnData.draw = aoData[0].value;//这里直接自行返回了draw计数器,应该由后台返回
+                returnData.recordsTotal = response.data.data.total;
+                returnData.recordsFiltered = response.data.data.total;
+                returnData.data = {};//由于采用了angular方式展现数据，此处dt插件不再继续展现数据
+                fnCallback(returnData);
+            });
+
+            //再次查询时使用的参数
+            demo.user.fnCallback = fnCallback;
+        });
+
+        demo.dtColumnDefs = [
+            //排序配置-3
+            //排序的字段指定其Column名称
+            DTColumnDefBuilder.newColumnDef(0).withOption("sName", "user_name"),
+            DTColumnDefBuilder.newColumnDef(1).notSortable(),
+            DTColumnDefBuilder.newColumnDef(2).notSortable(),
+            DTColumnDefBuilder.newColumnDef(3).notSortable(),
+            DTColumnDefBuilder.newColumnDef(4).notSortable(),
+            DTColumnDefBuilder.newColumnDef(5).notSortable(),
+            DTColumnDefBuilder.newColumnDef(6).notSortable(),
+            DTColumnDefBuilder.newColumnDef(7).notSortable(),
+            DTColumnDefBuilder.newColumnDef(8).withOption("sName", "create_date"),
+            DTColumnDefBuilder.newColumnDef(9).withOption("sName", "update_date"),
+            DTColumnDefBuilder.newColumnDef(10).notSortable()
+        ];
+
+
+
+            </script>
+        </meta>
+    </head>
+    <body>
+        
+
+<div class="wrapper wrapper-content animated fadeInRight" ng-controller="demoController as demo">
+    <div class="ibox-content m-b-sm border-bottom">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">用户名</label>
+                    <input type="text" ng-model="demo.user.userName" class="form-control"/>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">用户状态</label>
+                    <select class="form-control m-b" ng-model="demo.user.enabled">
+                        <option value="true">有效</option>
+                        <option value="false">无效</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">邮箱</label>
+                    <input type="text" ng-model="demo.user.email" class="form-control"/>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">修改时间</label>
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input date-range-picker class="form-control date-picker" ng-model="demo.dateRange" options="demo.options"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label">&nbsp;</label>
+                    <div class="input-group">
+                        <button class="btn btn-primary" type="button"><i class="fa fa-search"></i>&nbsp;&nbsp;查询</button>&nbsp;&nbsp;
+                        <button has-permission="USER_ADD_VISIBLE" class="btn btn-primary" type="button"><i class="fa fa-plus-circle"></i>&nbsp;&nbsp;新建</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>查询结果信息</h5>
+                    <div ibox-tools></div>
+                </div>
+                <div class="ibox-content">
+                    <table datatable="" dt-options="demo.dtOptions" dt-column-defs="demo.dtColumnDefs" class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>用户名</th>
+                                <th>状态</th>
+                                <th>真实姓名</th>
+                                <th>管理员</th>
+                                <th>邮箱</th>
+                                <th>性别</th>
+                                <th>地址</th>
+                                <th>电话</th>
+                                <th>创建时间</th>
+                                <th>更新时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="gradeX" ng-repeat="user in demo.pageInfo.list">
+                                <td>{{user.userName}}</td>
+                                <td>
+                                    <span class="label label-primary" ng-if="user.enabled">Enable</span>
+                                    <span class="label label-danger" ng-if="null!=user.enabled && !user.enabled">Disabled</span>
+                                </td>
+                                <td>{{user.realName}}</td>
+                                <td>{{user.isAdmin?'是':'否'}}</td>
+                                <td>{{user.email}}</td>
+                                <td>{{user.maleDisplay}}</td>
+                                <td>{{user.address}}</td>
+                                <td>{{user.mobile}}</td>
+                                <td>{{user.createDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td>{{user.updateDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td width="220px" class="text-left">
+                                    <div ng-if="null!=user">
+                                        <button type="button" class="btn btn-xs btn-outline btn-primary">查看</button>
+                                        <button type="button" has-permission="USER_RESETPWD_VISIBLE" class="btn btn-xs btn-outline btn-warning">重置密码</button>
+                                        <!--<button type="button" class="btn btn-xs btn-outline btn-primary">修改</button>-->
+                                        <button type="button" has-permission="USER_ENABLE_DISABLED_VISIBLE" ng-if="user.enabled" class="btn btn-xs btn-outline btn-warning">禁用</button>
+                                        <button type="button" has-permission="USER_ENABLE_DISABLED_VISIBLE" ng-if="null!=user.enabled && !user.enabled" class="btn btn-xs btn-outline btn-primary" >启用</button>
+
+                                        <button type="button" has-permission="USER_DELETE_VISIBLE" class="btn btn-xs btn-outline btn-danger">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    </body>
+</html>
