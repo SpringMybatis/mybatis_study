@@ -8,7 +8,7 @@ function divAutoMove() {
             var divSelect = "#" + attrs.divAutoMove;
             var container = angular.element(elements);
             container.bind('mousedown',function (event) {
-                $(divSelect).css("cursor","move");
+                // $(divSelect).css("cursor","move");
                 var isMove = true;
                 var abs_x = event.pageX - $(divSelect).offset().left;
                 var abs_y = event.pageY - $(divSelect).offset().top;
@@ -25,8 +25,10 @@ function divAutoMove() {
                         isMove = false;
                     }
                 );
-            }).bind('mouseup',function (event) {
+            })/*.bind('mouseup',function (event) {
                 $(divSelect).css("cursor","default");
+            })*/.bind('mouseover',function (event) {
+                $(divSelect).css("cursor","pointer");
             });
         }
     }
