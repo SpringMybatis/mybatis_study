@@ -1,0 +1,416 @@
+<div class="login middle-box text-center loginscreen  animated fadeInDown">
+    <div>
+        <div>
+            <h1 class="logo-name" style="font-size:90px;">WWX</h1>
+        </div>
+        <h3>欢迎使用WWX平台</h3>
+        </p>
+        <form class="m-t" role="form">
+            <div class="form-group">
+                <input class="form-control" placeholder="Username" required="">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="Password" required="">
+            </div>
+            <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+        </form>
+        <p class="m-t"> <small><strong>Copyright</strong> Xgw Company &copy; 2018-2050</small> </p>
+    </div>
+</div>
+
+<div class="index_login text-center">
+    <div class="outer_box">
+        <div class="big_logo"></div>
+        <font style="font-size:38px; color: #A0A0A0; margin-left:5%">您好，欢迎使用 </font>
+        <font style="font-size:22px; color: #A0A0A0; margin-left:5%">Hello，Welcome！</font>
+        <form>
+            <div class="login_box">
+                    <div id="fm1">
+                        <div class="w261">
+                            <div class="user">
+                                <input class="input_box" placeholder="请输入用户名" type="text" value="" size="25">
+                            </div>
+                            <div class="user">
+                                <input class="input_box password" placeholder="请输入密码" type="password" size="25">
+                            </div>
+                            <button class="button">立即登录</button>
+                            <p class="m-t"> <small><strong>Copyright</strong> Xgw Company &copy; 2018-2050</small> </p>
+                        </div>
+                    </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <div class="inmodal" id="passwordModal">
+        <div class="modal-header">
+            <h4 class="modal-title">密码修改</h4>
+        </div>
+        <div class="modal-body">
+            <form role="form">
+                <div class="form-group">
+                    <label>原密码</label>
+                    <input type="password" placeholder="本地账号登录密码" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" placeholder="新密码" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" placeholder="确认密码" class="form-control">
+                </div>
+            </form>
+            <label style="color: red" ng-show="usermeta.errorshow">* &nbsp; {{ usermeta.errorMsg }}</label>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white">取消</button>
+            <button type="button" class="btn btn-primary">保存</button>
+        </div>
+    </div>
+</div>
+
+
+<div>
+    <div class="inmodal" id="usereditModal">
+        <div class="modal-header">
+            <h4 class="modal-title">修改信息</h4>
+        </div>
+        <div class="modal-body">
+            <form role="form">
+                <div class="form-group">
+                    <label>用户名 <span style="color: red">*</span></label>
+                    <input type="text" required class="form-control" placeholder="userName"/>
+                </div>
+                <div class="form-group">
+                    <label>真实姓名</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>用户状态 <span style="color: red">*</span></label>
+                    <select class="form-control" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>邮箱 </label>
+                    <input type="text" class="form-control" placeholder="test@pingan.com">
+                </div>
+                <div class="form-group">
+                    <label>地址 </label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>昵称 </label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>性别</label>
+                    <select class="form-control">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>手机号 </label>
+                    <input type="text" class="form-control">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white">取消</button>
+            <button type="button" class="btn btn-primary">保存</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="wrapper wrapper-content animated fadeInRight" ng-controller="authController as auth">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+
+                <div class="ibox-content m-b-sm border-bottom">
+                    <div class="p-xs">
+                        <div class="pull-left m-r-md">
+                            <i class="fa fa-globe text-navy mid-icon"></i>
+                        </div>
+                        <h2>欢迎登录Wwx平台</h2>
+                        <span>i think you a boy? yes or no?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label class="control-label" for="product_name">Product Name</label>
+            <input type="text" id="product_name" name="product_name" value="" placeholder="Product Name" class="form-control">
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="control-label" for="price">Price</label>
+            <input type="text" id="price" name="price" value="" placeholder="Price" class="form-control">
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="control-label" for="quantity">Quantity</label>
+            <input type="text" id="quantity" name="quantity" value="" placeholder="Quantity" class="form-control">
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label class="control-label" for="status">Status</label>
+            <select name="status" id="status" class="form-control">
+                <option value="1" selected>Enabled</option>
+                <option value="0">Disabled</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+.state('monitor.rule_list', {
+            url: "/rule_list",
+            templateUrl: "views/mail/wizard.html",
+            data: {pageTitle: '导向'},
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['css/plugins/iCheck/custom.css','js/plugins/iCheck/icheck.min.js']
+                        },
+                        {
+                            files: ['css/plugins/steps/jquery.steps.css']
+                        }
+                    ]);
+                }
+            }
+        })
+        .state('monitor.rule_list.wizard_one', {
+            url: "/step_one",
+            templateUrl: "views/mail/wizard_one.html",
+            data: {pageTitle: '第一步'}
+        })
+        .state('monitor.rule_list.wizard_two', {
+            url: "/step_one",
+            templateUrl: "views/mail/wizard_two.html",
+            data: {pageTitle: '第二步'}
+        })
+        .state('monitor.rule_list.wizard_three', {
+            url: "/step_one",
+            templateUrl: "views/mail/wizard_three.html",
+            data: {pageTitle: '第三步'}
+        })
+        .state('monitor.rule_list.wizard_four', {
+            url: "/step_one",
+            templateUrl: "views/mail/wizard_four.html",
+            data: {pageTitle: '第四步'}
+        })
+        .state('monitor.rule_list.wizard_five', {
+            url: "/step_one",
+            templateUrl: "views/mail/wizard_five.html",
+            data: {pageTitle: '第五步'}
+        })
+
+
+.controller('wizardController',function ($state,$timeout) {
+        var wizard = this;
+        wizard.formData = {};
+
+        wizard.processForm = function () {
+            console.info(wizard.formData);
+        };
+
+        wizard.stepTwo = function () {
+
+        }
+
+    })
+
+
+<div class="wrapper wrapper-content animated fadeInRight" ng-controller="wizardController as wizard">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>添加任务</h5>
+                    <div ibox-tools-full-screen></div>
+                </div>
+                <div class="ibox-content wizard">
+                    <h2>
+                        任务描述
+                    </h2>
+                    <p>
+                        这是一个例子运用路由去做一个表单
+                        <!--<br/>
+                        <strong>Data from ng-model.</strong><br/>
+                        <code>{{ wizard.formData}}</code>-->
+                    </p>
+
+                    <div class="steps clearfix">
+                        <ul>
+                            <li ng-disabled="true" style="width: 20%" ui-sref-active="current">
+                                <a ui-sref=".wizard_one" class="btn-default">
+                                    第一步
+                                </a>
+                            </li>
+                            <li ng-click="wizard.stepTwo()" style="width: 20%" ui-sref-active="current">
+                                <a ui-sref=".wizard_two" class="btn-default">
+                                    第二步
+                                </a>
+                            </li>
+                            <li style="width: 20%" ui-sref-active="current">
+                                <a ui-sref=".wizard_three" class="btn-default">
+                                    第三步
+                                </a>
+                            </li>
+                            <li style="width: 20%" ui-sref-active="current">
+                                <a ui-sref=".wizard_four" class="btn-default">
+                                    第四步
+                                </a>
+                            </li>
+                            <li style="width: 20%" ui-sref-active="current">
+                                <a ui-sref=".wizard_five" class="btn-default">
+                                    第五步
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="wizard">
+                        <div style="background: #f9f9f9" class="content">
+                            <form name="signupForm" ng-submit="wizard.processForm()" class="p-lg">
+                                <div id="form-views" ui-view></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<fieldset>
+    <h2>第一步</h2>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <label>用户名 *</label>
+                <input id="userName" ng-model="wizard.formData.username" name="username" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>密码 *</label>
+                <input id="password" ng-model="wizard.formData.password" name="password" type="password" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>确认密码 *</label>
+                <input id="confirm" ng-model="wizard.formData.password" name="confirm" type="text" class="form-control">
+            </div>
+        </div>
+    </div>
+    <a ui-sref="monitor.rule_list.wizard_two" class="btn btn-primary">下一步</a>
+</fieldset>
+
+<fieldset>
+    <h2>第二步</h2>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label>FirstName</label>
+                <input id="name" name="name" ng-model="wizard.formData.firstName" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>LastName</label>
+                <input id="surname" name="surname" ng-model="wizard.formData.lastName" type="text" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label>Email</label>
+                <input id="email" name="email" type="text" ng-model="wizard.formData.email" class="form-control email">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input id="address" name="address" type="text" ng-model="wizard.formData.address" class="form-control">
+            </div>
+        </div>
+    </div>
+    <a ui-sref="monitor.rule_list.wizard_one" class="btn btn-default">上一步</a>
+    <a ui-sref="monitor.rule_list.wizard_three" class="btn btn-primary">下一步</a>
+</fieldset>
+
+<fieldset>
+    <h2>第三步</h2>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label>电话</label>
+                <input id="tel" name="tel" ng-model="wizard.formData.tel" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>性别</label>
+                <input id="sex" name="sex" ng-model="wizard.formData.sex" type="text" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label>年龄</label>
+                <input id="age" name="age" type="text" ng-model="wizard.formData.age" class="form-control email">
+            </div>
+            <div class="form-group">
+                <label>身高</label>
+                <input id="height" name="address" type="text" ng-model="wizard.formData.height" class="form-control">
+            </div>
+        </div>
+    </div>
+    <a ui-sref="monitor.rule_list.wizard_two" class="btn btn-default">上一步</a>
+    <a ui-sref="monitor.rule_list.wizard_four" class="btn btn-primary">下一步</a>
+</fieldset>
+
+
+<fieldset>
+    <h2>第四步</h2>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label>体重</label>
+                <input id="weight" name="weight" ng-model="wizard.formData.weight" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>微信</label>
+                <input id="weixin" name="weixin" ng-model="wizard.formData.weixin" type="text" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label>QQ</label>
+                <input id="qq" name="qq" type="text" ng-model="wizard.formData.qq" class="form-control email">
+            </div>
+            <div class="form-group">
+                <label>微博</label>
+                <input id="weibo" name="weibo" type="text" ng-model="wizard.formData.weibo" class="form-control">
+            </div>
+        </div>
+    </div>
+    <a ui-sref="monitor.rule_list.wizard_three" class="btn btn-default">上一步</a>
+    <a ui-sref="monitor.rule_list.wizard_five" class="btn btn-primary">下一步</a>
+</fieldset>
+
+
+<fieldset>
+    <h2>第五步</h2>
+    <input id="acceptTerms" name="acceptTerms" type="checkbox" ng-model="wizard.formData.terms" class="required">
+    <label for="acceptTerms"> 是否同意任务提交</label>
+</fieldset>
+<fieldset class="m-t-md">
+    <a ui-sref="monitor.rule_list.wizard_three" class="btn btn-default">上一步</a>
+    <button type="submit" class="btn btn-primary">提交任务</button>
+</fieldset>
+
+
+    
+
