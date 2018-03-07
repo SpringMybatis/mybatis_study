@@ -74,6 +74,15 @@ https://www.cnblogs.com/whh412/p/5644458.html
 
 http://blog.csdn.net/lzc409973859/article/details/52624880
 
+# springboot ehcache
+
+http://blog.csdn.net/xiaolyuh123/article/details/77161084
+
+http://blog.csdn.net/qq18998401056/article/details/53463684
+
+https://www.cnblogs.com/shyroke/p/8025604.html
+
+https://github.com/wyh-spring-ecosystem-student/spring-boot-student/tree/releases
 
 
 
