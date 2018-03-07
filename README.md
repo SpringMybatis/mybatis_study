@@ -69,7 +69,10 @@ https://www.cnblogs.com/zishengY/p/7170656.html
 https://www.cnblogs.com/hdwang/p/6081994.html
 
 
+# angualrjs $http
+https://www.cnblogs.com/whh412/p/5644458.html
 
+http://blog.csdn.net/lzc409973859/article/details/52624880
 
 
 
