@@ -1,5 +1,4 @@
-# mybatis_study
-mybatis学习笔记
+# 干货记载
 
 # java cmd shell
 https://yq.aliyun.com/articles/2362
