@@ -76,6 +76,8 @@ http://blog.csdn.net/lzc409973859/article/details/52624880
 
 # springboot ehcache
 
+http://blog.csdn.net/kongbaidepao/article/details/50835909
+
 http://blog.csdn.net/xiaolyuh123/article/details/77161084
 
 http://blog.csdn.net/qq18998401056/article/details/53463684
