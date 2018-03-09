@@ -270,3 +270,25 @@ delCookie: function(c_name){
     }
 },
 
+
+
+
+
+var expireDate = new Date();  
+expireDate.setDate(expireDate.getDate() + 30);                
+$cookies.put('myFavorite', 'oatmeal', {'expires': expireDate.toUTCString()});  
+
+ // Find tomorrow's date.
+  var expireDate = new Date();
+  expireDate.setDate(expireDate.getDate() + 1);
+  // Setting a cookie
+  $cookies.put('myFavorite', 'oatmeal', {'expires': expireDate});
+
+
+
+
+
+
+
+
+
