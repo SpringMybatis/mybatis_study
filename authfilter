@@ -1,0 +1,170 @@
+package com.xgw.wwx.filter;
+
+import com.xgw.wwx.service.CacheService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import java.io.IOException;
+
+/**
+ * Created by EX-ZHONGJUN001 on 2018/3/9.
+ */
+@Component
+@WebFilter(urlPatterns = "/*", filterName = "indexFilter")
+public class AuthFilter implements Filter {
+
+
+    @Autowired
+    private CacheService cacheService;
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+        // System.out.println(cacheService);
+        String value = cacheService.get("1");
+        System.out.println(value);
+
+        filterChain.doFilter(servletRequest,servletResponse);
+
+    }
+
+    @Override
+    public void destroy() {
+
+    }
+
+}
+
+
+
+
+
+package com.anhouse.auth.web.filter;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.alibaba.fastjson.JSONObject;
+import com.anhouse.auth.common.auth.AuthContextDelegate;
+import com.anhouse.auth.common.auth.AuthRouter;
+import com.anhouse.auth.common.code.CommonCodeEnum;
+import com.anhouse.auth.common.constant.AuthConstant;
+import com.anhouse.auth.common.exception.TokenException;
+import com.anhouse.auth.common.util.StringUtil;
+import com.anhouse.auth.domain.dto.CommonResponseDTO;
+import com.anhouse.auth.domain.entity.UserToken;
+import com.anhouse.auth.frame.spring.SpringServiceContext;
+
+public class AccessAuthFilter implements Filter {
+
+	private static final Logger logger = LoggerFactory.getLogger(AccessAuthFilter.class);
+
+	public AccessAuthFilter() {
+
+	}
+
+	@Autowired
+	public void init(FilterConfig config) throws ServletException {}
+
+	@Autowired
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) resp;
+
+		//线程变量保存本次访问的request
+		AuthContextDelegate.threadLocal.set(request);
+		
+		String strContextPath = request.getSession().getServletContext().getContextPath();
+		String uri = request.getRequestURI().substring(strContextPath.length());
+
+		// OPTIONS
+		if (StringUtil.isNotNull(request.getMethod()) && request.getMethod().equals(RequestMethod.OPTIONS.toString())) {
+			chain.doFilter(req, resp);
+			return;
+		}
+
+		// 排除的url
+		for (String excludeUrl : AuthConstant.EXCLUDE_URLS) {
+			if (uri.indexOf(excludeUrl) != -1) {
+				chain.doFilter(req, resp);
+				return;
+			}
+		}
+
+		// 包含的url
+		boolean include = false;
+		for (String excludeUrl : AuthConstant.INCLUDE_URLS) {
+			if (uri.indexOf(excludeUrl) != -1) {
+				include = true;
+				break;
+			}
+		}
+		if (!include) {
+			chain.doFilter(req, resp);
+			return;
+		}
+
+		try {
+			// 验证token
+			String token = AuthContextDelegate.getAuthorization(request);
+
+			AuthRouter authRouter = (AuthRouter) SpringServiceContext.getBeanByClass(AuthRouter.class);
+
+			authRouter.getBaseAuthDecorator().validAuthResource(token, uri);
+
+			// tokenHandler.refresh(token);
+
+			logger.info("-- AuthSecurity: 请求'{}', 验证Token'{}' 通过 --", new Object[] { uri, token });
+		} catch (TokenException e) {
+			logger.warn("-- AuthSecurity: 请求'{}', 验证失败 {} --", new Object[] { uri, e.getDetailMessage() });
+			CommonResponseDTO<UserToken> respDTO = new CommonResponseDTO<UserToken>(e.getErrorCode(), e.getDetailMessage(), false);
+			response.getWriter().write(JSONObject.toJSONString(respDTO));
+			return;
+		} catch (Exception e) {
+			logger.warn("-- AuthSecurity: 请求'{}', 验证失败 {} --",
+					new Object[] { uri, CommonCodeEnum.SYSTEM_ERROR.getMsg() });
+			CommonResponseDTO<UserToken> respDTO = new CommonResponseDTO<UserToken>(CommonCodeEnum.SYSTEM_ERROR.getCode(), CommonCodeEnum.SYSTEM_ERROR.getMsg(), false);
+			response.getWriter().write(JSONObject.toJSONString(respDTO));
+			return;
+		}
+
+		chain.doFilter(req, resp);
+	}
+
+	@Autowired
+	public void destroy() {
+		logger.info("login filter destroy");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
