@@ -1,0 +1,3 @@
+<association property="sourceTable" select="findTableById" column="source_table_id"></association>
+		<association property="referTable" select="findTableById" column="refer_table_id"></association>
+		<collection property="configs" select="findConstraintConfigs" column="id"></collection>
