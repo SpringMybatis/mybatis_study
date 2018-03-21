@@ -1,0 +1,16 @@
+<!--Menu Level-1-->
+            <li ng-repeat="menu in navigation.menuTree" ng-class="{active: $state.includes('{{menu.resourceLabel}}')}" id="menu_{{menu.id}}">
+                <a ng-click="navigation.level1_menuToggle(menu)" ng-if="menu.type==0">
+                    <!--icon-->
+                    <i class="{{menu.iconClass}}"></i>
+                    <span class="nav-label">{{menu.resourceName}}</span>
+                    <!--arrow-->
+                    <span ng-if="menu.childResourceList.length!=0" class="fa arrow"/>
+                </a>
+                <!--Menu Level-2-->
+                <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('{{secondMenu.resourceLabel}}')}">
+                    <li ng-repeat="secondMenu in menu.childResourceList" ng-if="secondMenu.type==0">
+                        <a ui-sref="{{secondMenu.url}}" ng-click="navigation.level2_menuToggle(menu, secondMenu)"><i class="{{secondMenu.iconClass}}"/>{{secondMenu.resourceName}}</a>
+                    </li>
+                </ul>
+            </li>
