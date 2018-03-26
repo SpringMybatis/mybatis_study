@@ -1,0 +1,141 @@
+package com.pingan.hf.log4j2.util;
+
+import java.io.Serializable;
+
+public class ResultDTO implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String host;
+
+	private int port;
+
+	private Boolean result;
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public Boolean getResult() {
+		return result;
+	}
+
+	public void setResult(Boolean result) {
+		this.result = result;
+	}
+
+	@Override
+	public String toString() {
+		return "ResultDTO [host=" + host + ", port=" + port + ", result=" + result + "]";
+	}
+
+}
+
+
+
+package com.pingan.hf.log4j2.util;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.concurrent.Callable;
+
+public class IpTask implements Callable<ResultDTO> {
+
+	private String host;
+
+	private int port;
+
+	@Override
+	public ResultDTO call() throws Exception {
+		Socket connect = null;
+		Boolean flag = Boolean.FALSE;
+		try {
+			connect = new Socket();
+			connect.connect(new InetSocketAddress(host, port), 100);
+			if (connect.isConnected()) {
+				flag = Boolean.TRUE;
+			}
+		} catch (IOException e) {
+			// TODO 记录日志
+		} finally {
+			if (null != connect) {
+				connect.close();
+			}
+		}
+		ResultDTO result = new ResultDTO();
+		result.setHost(host);
+		result.setPort(port);
+		result.setResult(flag);
+		return result;
+	}
+
+	public IpTask(String host, int port) {
+		super();
+		this.host = host;
+		this.port = port;
+	}
+
+}
+
+
+
+package com.pingan.hf.log4j2.util;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+public class PortScanner {
+
+	public static void main(String[] args) throws Exception {
+		int port = 8696;
+		String startPort = "10.28.81.7";
+		String endPort = "10.28.83.15";
+
+		Long startIp = IpUtil.ipToLong(startPort);
+		Long endIp = IpUtil.ipToLong(endPort);
+
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Collection<Callable<ResultDTO>> tasks = new LinkedList<Callable<ResultDTO>>();
+
+		Collection<Future<ResultDTO>> results = null;
+		for (long i = startIp; i <= endIp; i++) {
+			String tempIp = IpUtil.longToIp(i);
+			tasks.add(new IpTask(tempIp, port));
+		}
+
+		results = executor.invokeAll(tasks, 10, TimeUnit.SECONDS);
+		executor.shutdown();
+
+		for (Future<ResultDTO> result : results) {
+			if (result.get().getResult()) {
+				System.out.println(result.get());
+			}
+		}
+
+	}
+
+}
+
+
+
