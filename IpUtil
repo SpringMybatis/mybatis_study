@@ -1,0 +1,61 @@
+package com.pingan.hf.log4j2.util;
+
+public class IpUtil {
+
+	public static long ipToLong2(String ipAddress) {
+		String[] ipAddressInArray = ipAddress.split("\\.");
+		long result = 0;
+		for (int i = 0; i < ipAddressInArray.length; i++) {
+			int power = 3 - i;
+			int ip = Integer.parseInt(ipAddressInArray[i]);
+			result += ip * Math.pow(256, power);
+		}
+		return result;
+	}
+
+	public static long ipToLong(String ipAddress) {
+		long result = 0;
+		String[] ipAddressInArray = ipAddress.split("\\.");
+		for (int i = 3; i >= 0; i--) {
+			long ip = Long.parseLong(ipAddressInArray[3 - i]);
+			result |= ip << (i * 8);
+		}
+		return result;
+	}
+
+	public static String longToIp(long i) {
+		return ((i >> 24) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + (i & 0xFF);
+	}
+
+	public static String longToIp2(long ip) {
+		StringBuilder sb = new StringBuilder(15);
+		for (int i = 0; i < 4; i++) {
+			sb.insert(0, Long.toString(ip & 0xff));
+			if (i < 3) {
+				sb.insert(0, '.');
+			}
+			ip = ip >> 8;
+		}
+		return sb.toString();
+	}
+
+	public static void main(String[] args) {
+		String ip1 = "172.168.1.1";
+
+		String ip2 = "172.168.2.67";
+
+		Long iplong1 = ipToLong(ip1);
+		Long iplong2 = ipToLong(ip2);
+
+		// System.out.println(iplong1);
+		// System.out.println(iplong2);
+
+		for (long i = iplong1; i <= iplong2; i++) {
+			System.out.println(longToIp(i));
+		}
+
+		System.out.println(iplong2 - iplong1 + 1);
+		
+	}
+
+}
